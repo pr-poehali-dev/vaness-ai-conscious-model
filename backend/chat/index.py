@@ -1,12 +1,7 @@
 import json
-import os
+import urllib.request
+import urllib.error
 from typing import Dict, Any, List
-
-try:
-    from openai import OpenAI
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OPENAI_AVAILABLE = False
 
 ROLE_PROMPTS = {
     'dev': 'Ты опытный программист-разработчик. Помогаешь с кодом, отладкой и архитектурой.',
@@ -61,9 +56,80 @@ ROLE_PROMPTS = {
     'stand': 'Ты комик. Помогаешь со стендапом и юмором.',
 }
 
+def call_huggingface_api(prompt: str, max_length: int = 200) -> str:
+    """Вызов Hugging Face Inference API без ключа"""
+    api_url = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium"
+    
+    payload = {
+        "inputs": prompt,
+        "parameters": {
+            "max_length": max_length,
+            "temperature": 0.7,
+            "return_full_text": False
+        }
+    }
+    
+    try:
+        req = urllib.request.Request(
+            api_url,
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'}
+        )
+        
+        with urllib.request.urlopen(req, timeout=30) as response:
+            result = json.loads(response.read().decode('utf-8'))
+            
+            if isinstance(result, list) and len(result) > 0:
+                return result[0].get('generated_text', 'Извините, не могу ответить.')
+            return 'Извините, произошла ошибка при генерации ответа.'
+            
+    except urllib.error.HTTPError as e:
+        if e.code == 503:
+            return 'Модель загружается, попробуйте через 20 секунд...'
+        return f'Ошибка API: {e.code}'
+    except Exception as e:
+        return f'Ошибка: {str(e)}'
+
+def generate_smart_response(messages: List[Dict[str, str]], role_id: str) -> str:
+    """Генерация умного ответа с учётом роли"""
+    system_prompt = ROLE_PROMPTS.get(role_id, 'Ты умный ИИ-ассистент Ванес.')
+    
+    last_user_message = ''
+    for msg in reversed(messages):
+        if msg.get('role') == 'user':
+            last_user_message = msg.get('content', '')
+            break
+    
+    if not last_user_message:
+        return 'Пожалуйста, задайте вопрос.'
+    
+    full_prompt = f"{system_prompt}\n\nВопрос: {last_user_message}\n\nОтвет:"
+    
+    response = call_huggingface_api(full_prompt, max_length=300)
+    
+    if not response or 'Ошибка' in response or 'загружается' in response:
+        return generate_fallback_response(last_user_message, role_id)
+    
+    return response
+
+def generate_fallback_response(question: str, role_id: str) -> str:
+    """Локальный fallback-ответ если API недоступен"""
+    role_name = ROLE_PROMPTS.get(role_id, 'ИИ-ассистент')
+    
+    responses = {
+        'dev': f'Как разработчик, я рекомендую: разбить задачу на этапы, изучить документацию и написать тесты. По вопросу "{question[:50]}..." - начните с анализа требований.',
+        'design': f'С точки зрения дизайна, важно учитывать UX. По вашему вопросу "{question[:50]}..." - фокусируйтесь на простоте и удобстве пользователя.',
+        'marketing': f'В маркетинге ключевое - знать аудиторию. Относительно "{question[:50]}..." - проанализируйте целевую аудиторию и конкурентов.',
+        'writer': f'Как копирайтер советую: будьте конкретны, пишите просто. По теме "{question[:50]}..." - начните с чёткой структуры текста.',
+        'teacher': f'Давайте разберём это по шагам. Вопрос "{question[:50]}..." требует системного подхода. Начнём с основ и постепенно углубимся.',
+        'psycho': f'Понимаю ваш вопрос. "{question[:50]}..." - это важная тема. Давайте подойдём к этому с позиции самоанализа и понимания.',
+    }
+    
+    return responses.get(role_id, f'Спасибо за вопрос "{question[:50]}...". Я готов помочь! Уточните детали, и я дам более конкретный ответ.')
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Обработка запросов к ИИ-ассистенту Ванес с поддержкой ролей
+    Обработка запросов к ИИ-ассистенту Ванес (без API ключей)
     '''
     method: str = event.get('httpMethod', 'POST')
     
@@ -91,29 +157,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'isBase64Encoded': False
         }
     
-    if not OPENAI_AVAILABLE:
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({'error': 'OpenAI library not installed'}),
-            'isBase64Encoded': False
-        }
-    
-    api_key = os.environ.get('OPENAI_API_KEY')
-    if not api_key:
-        return {
-            'statusCode': 500,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({'error': 'OPENAI_API_KEY not configured'}),
-            'isBase64Encoded': False
-        }
-    
     try:
         body_data = json.loads(event.get('body', '{}'))
         messages: List[Dict[str, str]] = body_data.get('messages', [])
@@ -130,21 +173,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'isBase64Encoded': False
             }
         
-        system_prompt = ROLE_PROMPTS.get(role_id, 'Ты умный ИИ-ассистент Ванес. Помогаешь пользователям с любыми вопросами.')
-        
-        client = OpenAI(api_key=api_key)
-        
-        completion = client.chat.completions.create(
-            model='gpt-3.5-turbo',
-            messages=[
-                {'role': 'system', 'content': system_prompt},
-                *messages
-            ],
-            temperature=0.7,
-            max_tokens=500
-        )
-        
-        response_message = completion.choices[0].message.content
+        response_message = generate_smart_response(messages, role_id)
         
         return {
             'statusCode': 200,

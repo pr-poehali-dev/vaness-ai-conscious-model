@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { aiCategories, getAllRoles, type AIRole } from '@/data/aiCategories';
 
 interface Message {
   id: string;
@@ -13,66 +15,7 @@ interface Message {
   timestamp: Date;
 }
 
-interface AIRole {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  color: string;
-}
-
-const aiRoles: AIRole[] = [
-  { id: 'dev', name: 'Разработчик', icon: 'Code2', description: 'Помощь с кодом и разработкой', color: 'from-purple-500 to-pink-500' },
-  { id: 'design', name: 'Дизайнер', icon: 'Palette', description: 'UI/UX и визуальный дизайн', color: 'from-pink-500 to-orange-500' },
-  { id: 'marketing', name: 'Маркетолог', icon: 'TrendingUp', description: 'Стратегия и продвижение', color: 'from-blue-500 to-cyan-500' },
-  { id: 'writer', name: 'Копирайтер', icon: 'PenTool', description: 'Тексты и контент', color: 'from-green-500 to-emerald-500' },
-  { id: 'analyst', name: 'Аналитик', icon: 'BarChart3', description: 'Данные и аналитика', color: 'from-yellow-500 to-orange-500' },
-  { id: 'support', name: 'Поддержка', icon: 'Headphones', description: 'Помощь пользователям', color: 'from-indigo-500 to-purple-500' },
-  { id: 'teacher', name: 'Преподаватель', icon: 'GraduationCap', description: 'Обучение и образование', color: 'from-cyan-500 to-blue-500' },
-  { id: 'doctor', name: 'Медик', icon: 'Stethoscope', description: 'Медицинские консультации', color: 'from-red-500 to-pink-500' },
-  { id: 'lawyer', name: 'Юрист', icon: 'Scale', description: 'Правовые вопросы', color: 'from-gray-500 to-slate-500' },
-  { id: 'hr', name: 'HR-специалист', icon: 'Users2', description: 'Подбор персонала', color: 'from-teal-500 to-cyan-500' },
-  { id: 'finance', name: 'Финансист', icon: 'DollarSign', description: 'Финансовое планирование', color: 'from-emerald-500 to-green-500' },
-  { id: 'sales', name: 'Менеджер продаж', icon: 'ShoppingCart', description: 'Продажи и клиенты', color: 'from-orange-500 to-amber-500' },
-  { id: 'pm', name: 'Продакт-менеджер', icon: 'Target', description: 'Управление продуктом', color: 'from-violet-500 to-purple-500' },
-  { id: 'data', name: 'Data Scientist', icon: 'Database', description: 'Анализ больших данных', color: 'from-blue-500 to-indigo-500' },
-  { id: 'devops', name: 'DevOps', icon: 'Server', description: 'Инфраструктура и развертывание', color: 'from-slate-500 to-gray-500' },
-  { id: 'qa', name: 'Тестировщик', icon: 'Bug', description: 'Тестирование ПО', color: 'from-red-500 to-orange-500' },
-  { id: 'seo', name: 'SEO-специалист', icon: 'Search', description: 'Поисковое продвижение', color: 'from-green-500 to-teal-500' },
-  { id: 'smm', name: 'SMM-менеджер', icon: 'Share2', description: 'Соцсети и контент', color: 'from-pink-500 to-rose-500' },
-  { id: 'journalist', name: 'Журналист', icon: 'Newspaper', description: 'Новости и статьи', color: 'from-amber-500 to-yellow-500' },
-  { id: 'translator', name: 'Переводчик', icon: 'Languages', description: 'Перевод текстов', color: 'from-indigo-500 to-violet-500' },
-  { id: 'coach', name: 'Карьерный коуч', icon: 'Trophy', description: 'Развитие карьеры', color: 'from-yellow-500 to-orange-500' },
-  { id: 'psycho', name: 'Психолог', icon: 'Brain', description: 'Психологическая поддержка', color: 'from-purple-500 to-indigo-500' },
-  { id: 'architect', name: 'Архитектор', icon: 'Building2', description: 'Проектирование зданий', color: 'from-gray-500 to-zinc-500' },
-  { id: 'photo', name: 'Фотограф', icon: 'Camera', description: 'Фотография и обработка', color: 'from-sky-500 to-blue-500' },
-  { id: 'video', name: 'Видеограф', icon: 'Video', description: 'Видео и монтаж', color: 'from-red-500 to-pink-500' },
-  { id: 'music', name: 'Музыкант', icon: 'Music', description: 'Музыка и композиция', color: 'from-purple-500 to-pink-500' },
-  { id: 'game', name: 'Геймдизайнер', icon: 'Gamepad2', description: 'Разработка игр', color: 'from-green-500 to-emerald-500' },
-  { id: '3d', name: '3D-художник', icon: 'Box', description: '3D моделирование', color: 'from-cyan-500 to-blue-500' },
-  { id: 'motion', name: 'Моушн-дизайнер', icon: 'Film', description: 'Анимация и эффекты', color: 'from-orange-500 to-red-500' },
-  { id: 'content', name: 'Контент-мейкер', icon: 'Clapperboard', description: 'Создание контента', color: 'from-pink-500 to-purple-500' },
-  { id: 'blogger', name: 'Блогер', icon: 'User', description: 'Ведение блога', color: 'from-yellow-500 to-orange-500' },
-  { id: 'scientist', name: 'Учёный', icon: 'FlaskConical', description: 'Научные исследования', color: 'from-blue-500 to-cyan-500' },
-  { id: 'engineer', name: 'Инженер', icon: 'Wrench', description: 'Техническое проектирование', color: 'from-slate-500 to-gray-500' },
-  { id: 'chef', name: 'Шеф-повар', icon: 'ChefHat', description: 'Рецепты и кулинария', color: 'from-orange-500 to-red-500' },
-  { id: 'travel', name: 'Тревел-агент', icon: 'Plane', description: 'Планирование путешествий', color: 'from-sky-500 to-blue-500' },
-  { id: 'fitness', name: 'Фитнес-тренер', icon: 'Dumbbell', description: 'Тренировки и питание', color: 'from-green-500 to-emerald-500' },
-  { id: 'astro', name: 'Астролог', icon: 'Stars', description: 'Астрология и гороскопы', color: 'from-purple-500 to-indigo-500' },
-  { id: 'event', name: 'Ивент-менеджер', icon: 'CalendarCheck', description: 'Организация мероприятий', color: 'from-pink-500 to-rose-500' },
-  { id: 'realtor', name: 'Риелтор', icon: 'Home', description: 'Недвижимость и сделки', color: 'from-amber-500 to-orange-500' },
-  { id: 'vet', name: 'Ветеринар', icon: 'Cat', description: 'Здоровье животных', color: 'from-green-500 to-teal-500' },
-  { id: 'beauty', name: 'Бьюти-эксперт', icon: 'Sparkles', description: 'Красота и уход', color: 'from-pink-500 to-fuchsia-500' },
-  { id: 'fashion', name: 'Стилист', icon: 'Shirt', description: 'Мода и стиль', color: 'from-purple-500 to-pink-500' },
-  { id: 'auto', name: 'Автомеханик', icon: 'Car', description: 'Ремонт автомобилей', color: 'from-gray-500 to-slate-500' },
-  { id: 'garden', name: 'Садовник', icon: 'Flower2', description: 'Садоводство и растения', color: 'from-green-500 to-lime-500' },
-  { id: 'energy', name: 'Эколог', icon: 'Leaf', description: 'Экология и энергетика', color: 'from-emerald-500 to-green-500' },
-  { id: 'crypto', name: 'Криптоэксперт', icon: 'Bitcoin', description: 'Криптовалюты и блокчейн', color: 'from-orange-500 to-amber-500' },
-  { id: 'ml', name: 'ML-инженер', icon: 'BrainCircuit', description: 'Машинное обучение', color: 'from-blue-500 to-indigo-500' },
-  { id: 'cyber', name: 'Кибербезопасность', icon: 'Shield', description: 'Защита данных', color: 'from-red-500 to-orange-500' },
-  { id: 'voice', name: 'Голосовой актёр', icon: 'Mic', description: 'Озвучка и дубляж', color: 'from-purple-500 to-violet-500' },
-  { id: 'stand', name: 'Комик', icon: 'Laugh', description: 'Стендап и юмор', color: 'from-yellow-500 to-amber-500' },
-];
+const allRoles = getAllRoles();
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -87,9 +30,10 @@ const Index = () => {
   const [activeSection, setActiveSection] = useState<'chat' | 'history' | 'settings' | 'roles'>('chat');
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const sendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isLoading) return;
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -100,6 +44,7 @@ const Index = () => {
 
     setMessages([...messages, newMessage]);
     setInputValue('');
+    setIsLoading(true);
 
     try {
       const response = await fetch('https://functions.poehali.dev/b2d6802e-3702-4b9c-a555-c342b849d784', {
@@ -128,12 +73,14 @@ const Index = () => {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const selectRole = (roleId: string) => {
     setSelectedRole(roleId);
-    const role = aiRoles.find((r) => r.id === roleId);
+    const role = allRoles.find((r) => r.id === roleId);
     if (role) {
       const message: Message = {
         id: Date.now().toString(),
@@ -243,7 +190,7 @@ const Index = () => {
               </h2>
               {selectedRole && (
                 <Badge className="mt-1 bg-primary/20 text-primary border-primary/30">
-                  {aiRoles.find((r) => r.id === selectedRole)?.name}
+                  {allRoles.find((r) => r.id === selectedRole)?.name}
                 </Badge>
               )}
             </div>
@@ -305,6 +252,24 @@ const Index = () => {
                     </div>
                   </div>
                 ))}
+                {isLoading && (
+                  <div className="flex gap-4 animate-fade-in">
+                    <Avatar className="w-10 h-10 border-2 border-white/20">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary">
+                        <Icon name="Bot" size={20} className="text-white" />
+                      </div>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="inline-block glass px-6 py-4 rounded-2xl">
+                        <div className="flex gap-2">
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </ScrollArea>
 
@@ -319,9 +284,14 @@ const Index = () => {
                 />
                 <Button
                   onClick={sendMessage}
-                  className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+                  disabled={isLoading}
+                  className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
-                  <Icon name="Send" size={20} />
+                  {isLoading ? (
+                    <Icon name="Loader2" size={20} className="animate-spin" />
+                  ) : (
+                    <Icon name="Send" size={20} />
+                  )}
                 </Button>
               </div>
             </div>
@@ -330,28 +300,48 @@ const Index = () => {
 
         {activeSection === 'roles' && (
           <div className="flex-1 p-8 overflow-auto">
-            <div className="max-w-6xl mx-auto">
-              <h3 className="text-2xl font-bold mb-2">Выберите специализацию ИИ</h3>
+            <div className="max-w-7xl mx-auto">
+              <h3 className="text-3xl font-bold mb-2 gradient-text">Выберите специализацию ИИ</h3>
               <p className="text-muted-foreground mb-8">
-                Каждая роль оптимизирована под конкретные задачи
+                100+ профессиональных ролей в 5 категориях
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {aiRoles.map((role) => (
-                  <button
-                    key={role.id}
-                    onClick={() => selectRole(role.id)}
-                    className="glass p-6 rounded-2xl hover:scale-105 transition-all duration-300 text-left group"
-                  >
-                    <div
-                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${role.color} flex items-center justify-center mb-4 group-hover:neon-glow transition-all`}
+              
+              <Tabs defaultValue={aiCategories[0].id} className="w-full">
+                <TabsList className="glass mb-8 p-2 h-auto flex-wrap justify-start">
+                  {aiCategories.map((category) => (
+                    <TabsTrigger 
+                      key={category.id} 
+                      value={category.id}
+                      className="gap-2 data-[state=active]:bg-primary/20"
                     >
-                      <Icon name={role.icon as any} size={28} className="text-white" />
+                      <Icon name={category.icon as any} size={16} />
+                      {category.name}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+
+                {aiCategories.map((category) => (
+                  <TabsContent key={category.id} value={category.id}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {category.roles.map((role) => (
+                        <button
+                          key={role.id}
+                          onClick={() => selectRole(role.id)}
+                          className="glass p-4 rounded-xl hover:scale-105 transition-all duration-300 text-left group"
+                        >
+                          <div
+                            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${role.color} flex items-center justify-center mb-3 group-hover:neon-glow transition-all`}
+                          >
+                            <Icon name={role.icon as any} size={22} className="text-white" />
+                          </div>
+                          <h4 className="text-base font-semibold mb-1">{role.name}</h4>
+                          <p className="text-xs text-muted-foreground">{role.description}</p>
+                        </button>
+                      ))}
                     </div>
-                    <h4 className="text-xl font-semibold mb-2">{role.name}</h4>
-                    <p className="text-sm text-muted-foreground">{role.description}</p>
-                  </button>
+                  </TabsContent>
                 ))}
-              </div>
+              </Tabs>
             </div>
           </div>
         )}
