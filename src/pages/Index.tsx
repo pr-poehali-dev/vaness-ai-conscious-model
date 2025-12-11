@@ -28,6 +28,50 @@ const aiRoles: AIRole[] = [
   { id: 'writer', name: 'Копирайтер', icon: 'PenTool', description: 'Тексты и контент', color: 'from-green-500 to-emerald-500' },
   { id: 'analyst', name: 'Аналитик', icon: 'BarChart3', description: 'Данные и аналитика', color: 'from-yellow-500 to-orange-500' },
   { id: 'support', name: 'Поддержка', icon: 'Headphones', description: 'Помощь пользователям', color: 'from-indigo-500 to-purple-500' },
+  { id: 'teacher', name: 'Преподаватель', icon: 'GraduationCap', description: 'Обучение и образование', color: 'from-cyan-500 to-blue-500' },
+  { id: 'doctor', name: 'Медик', icon: 'Stethoscope', description: 'Медицинские консультации', color: 'from-red-500 to-pink-500' },
+  { id: 'lawyer', name: 'Юрист', icon: 'Scale', description: 'Правовые вопросы', color: 'from-gray-500 to-slate-500' },
+  { id: 'hr', name: 'HR-специалист', icon: 'Users2', description: 'Подбор персонала', color: 'from-teal-500 to-cyan-500' },
+  { id: 'finance', name: 'Финансист', icon: 'DollarSign', description: 'Финансовое планирование', color: 'from-emerald-500 to-green-500' },
+  { id: 'sales', name: 'Менеджер продаж', icon: 'ShoppingCart', description: 'Продажи и клиенты', color: 'from-orange-500 to-amber-500' },
+  { id: 'pm', name: 'Продакт-менеджер', icon: 'Target', description: 'Управление продуктом', color: 'from-violet-500 to-purple-500' },
+  { id: 'data', name: 'Data Scientist', icon: 'Database', description: 'Анализ больших данных', color: 'from-blue-500 to-indigo-500' },
+  { id: 'devops', name: 'DevOps', icon: 'Server', description: 'Инфраструктура и развертывание', color: 'from-slate-500 to-gray-500' },
+  { id: 'qa', name: 'Тестировщик', icon: 'Bug', description: 'Тестирование ПО', color: 'from-red-500 to-orange-500' },
+  { id: 'seo', name: 'SEO-специалист', icon: 'Search', description: 'Поисковое продвижение', color: 'from-green-500 to-teal-500' },
+  { id: 'smm', name: 'SMM-менеджер', icon: 'Share2', description: 'Соцсети и контент', color: 'from-pink-500 to-rose-500' },
+  { id: 'journalist', name: 'Журналист', icon: 'Newspaper', description: 'Новости и статьи', color: 'from-amber-500 to-yellow-500' },
+  { id: 'translator', name: 'Переводчик', icon: 'Languages', description: 'Перевод текстов', color: 'from-indigo-500 to-violet-500' },
+  { id: 'coach', name: 'Карьерный коуч', icon: 'Trophy', description: 'Развитие карьеры', color: 'from-yellow-500 to-orange-500' },
+  { id: 'psycho', name: 'Психолог', icon: 'Brain', description: 'Психологическая поддержка', color: 'from-purple-500 to-indigo-500' },
+  { id: 'architect', name: 'Архитектор', icon: 'Building2', description: 'Проектирование зданий', color: 'from-gray-500 to-zinc-500' },
+  { id: 'photo', name: 'Фотограф', icon: 'Camera', description: 'Фотография и обработка', color: 'from-sky-500 to-blue-500' },
+  { id: 'video', name: 'Видеограф', icon: 'Video', description: 'Видео и монтаж', color: 'from-red-500 to-pink-500' },
+  { id: 'music', name: 'Музыкант', icon: 'Music', description: 'Музыка и композиция', color: 'from-purple-500 to-pink-500' },
+  { id: 'game', name: 'Геймдизайнер', icon: 'Gamepad2', description: 'Разработка игр', color: 'from-green-500 to-emerald-500' },
+  { id: '3d', name: '3D-художник', icon: 'Box', description: '3D моделирование', color: 'from-cyan-500 to-blue-500' },
+  { id: 'motion', name: 'Моушн-дизайнер', icon: 'Film', description: 'Анимация и эффекты', color: 'from-orange-500 to-red-500' },
+  { id: 'content', name: 'Контент-мейкер', icon: 'Clapperboard', description: 'Создание контента', color: 'from-pink-500 to-purple-500' },
+  { id: 'blogger', name: 'Блогер', icon: 'User', description: 'Ведение блога', color: 'from-yellow-500 to-orange-500' },
+  { id: 'scientist', name: 'Учёный', icon: 'FlaskConical', description: 'Научные исследования', color: 'from-blue-500 to-cyan-500' },
+  { id: 'engineer', name: 'Инженер', icon: 'Wrench', description: 'Техническое проектирование', color: 'from-slate-500 to-gray-500' },
+  { id: 'chef', name: 'Шеф-повар', icon: 'ChefHat', description: 'Рецепты и кулинария', color: 'from-orange-500 to-red-500' },
+  { id: 'travel', name: 'Тревел-агент', icon: 'Plane', description: 'Планирование путешествий', color: 'from-sky-500 to-blue-500' },
+  { id: 'fitness', name: 'Фитнес-тренер', icon: 'Dumbbell', description: 'Тренировки и питание', color: 'from-green-500 to-emerald-500' },
+  { id: 'astro', name: 'Астролог', icon: 'Stars', description: 'Астрология и гороскопы', color: 'from-purple-500 to-indigo-500' },
+  { id: 'event', name: 'Ивент-менеджер', icon: 'CalendarCheck', description: 'Организация мероприятий', color: 'from-pink-500 to-rose-500' },
+  { id: 'realtor', name: 'Риелтор', icon: 'Home', description: 'Недвижимость и сделки', color: 'from-amber-500 to-orange-500' },
+  { id: 'vet', name: 'Ветеринар', icon: 'Cat', description: 'Здоровье животных', color: 'from-green-500 to-teal-500' },
+  { id: 'beauty', name: 'Бьюти-эксперт', icon: 'Sparkles', description: 'Красота и уход', color: 'from-pink-500 to-fuchsia-500' },
+  { id: 'fashion', name: 'Стилист', icon: 'Shirt', description: 'Мода и стиль', color: 'from-purple-500 to-pink-500' },
+  { id: 'auto', name: 'Автомеханик', icon: 'Car', description: 'Ремонт автомобилей', color: 'from-gray-500 to-slate-500' },
+  { id: 'garden', name: 'Садовник', icon: 'Flower2', description: 'Садоводство и растения', color: 'from-green-500 to-lime-500' },
+  { id: 'energy', name: 'Эколог', icon: 'Leaf', description: 'Экология и энергетика', color: 'from-emerald-500 to-green-500' },
+  { id: 'crypto', name: 'Криптоэксперт', icon: 'Bitcoin', description: 'Криптовалюты и блокчейн', color: 'from-orange-500 to-amber-500' },
+  { id: 'ml', name: 'ML-инженер', icon: 'BrainCircuit', description: 'Машинное обучение', color: 'from-blue-500 to-indigo-500' },
+  { id: 'cyber', name: 'Кибербезопасность', icon: 'Shield', description: 'Защита данных', color: 'from-red-500 to-orange-500' },
+  { id: 'voice', name: 'Голосовой актёр', icon: 'Mic', description: 'Озвучка и дубляж', color: 'from-purple-500 to-violet-500' },
+  { id: 'stand', name: 'Комик', icon: 'Laugh', description: 'Стендап и юмор', color: 'from-yellow-500 to-amber-500' },
 ];
 
 const Index = () => {
@@ -44,7 +88,7 @@ const Index = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const newMessage: Message = {
@@ -57,15 +101,34 @@ const Index = () => {
     setMessages([...messages, newMessage]);
     setInputValue('');
 
-    setTimeout(() => {
-      const response: Message = {
+    try {
+      const response = await fetch('https://functions.poehali.dev/b2d6802e-3702-4b9c-a555-c342b849d784', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [...messages, newMessage].map(m => ({ role: m.role, content: m.content })),
+          roleId: selectedRole,
+        }),
+      });
+
+      const data = await response.json();
+      
+      const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'Я обрабатываю ваш запрос... Это демо-версия интерфейса Ванес.',
+        content: data.message || 'Произошла ошибка при получении ответа.',
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, response]);
-    }, 1000);
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: 'Ошибка подключения к API. Проверьте настройки.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    }
   };
 
   const selectRole = (roleId: string) => {

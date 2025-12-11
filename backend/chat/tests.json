@@ -1,0 +1,39 @@
+{
+  "tests": [
+    {
+      "name": "CORS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Missing messages",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "roleId": "dev"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Chat request with role",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "messages": [
+          {"role": "user", "content": "Привет"}
+        ],
+        "roleId": "dev"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
